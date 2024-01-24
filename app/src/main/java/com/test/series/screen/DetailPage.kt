@@ -191,9 +191,6 @@ fun DetailScreen(detailsBase: DetailsBasedata) {
         TopAppBar(
             title = { Text(text = detailsBase.original_name) },
             navigationIcon = {
-                IconButton(onClick = {  }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                }
             },
             actions = {
                 IconButton(onClick = { /* Handle favorite action */ }) {

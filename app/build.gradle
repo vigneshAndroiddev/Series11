@@ -23,6 +23,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_KEY", "\"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzZTc2OTNkNmQ3MDhlY2Y3NDcyYTU4NzFmNDliMjZjNyIsInN1YiI6IjY1YWM4MDkxYmMyY2IzMDBjYzk5NTUwYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.g5CqQpKU5D8wMTPweevfxSwvrAW64GaNyIIc9qBLg90\"")
+            //FIXME remove the string and add your api key
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
