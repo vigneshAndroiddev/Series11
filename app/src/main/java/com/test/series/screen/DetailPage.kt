@@ -1,6 +1,7 @@
 package com.test.series.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
@@ -33,15 +35,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import coil.compose.rememberAsyncImagePainter
 import com.test.series.R
 import com.test.series.dataclass.DetailsBasedata
+import com.test.series.retrofit.network.ApiService
 import com.test.series.util.ApiState
 import com.test.series.viewmodel.DetailVieModel
 import kotlinx.coroutines.delay
@@ -164,7 +172,7 @@ fun ProgressBar() {
 fun DetailsPageCompose(detailsBase: DetailsBasedata) {
     Box(modifier = Modifier)
     {
-        MovieDetailScreen(detailsBase = detailsBase)
+        DetailScreen(detailsBase = detailsBase)
     }}
 
 
@@ -173,7 +181,7 @@ fun DetailsPageCompose(detailsBase: DetailsBasedata) {
 
 
 @Composable
-fun MovieDetailScreen(detailsBase: DetailsBasedata) {
+fun DetailScreen(detailsBase: DetailsBasedata) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -199,7 +207,7 @@ fun MovieDetailScreen(detailsBase: DetailsBasedata) {
 
         // Movie Image
         Image(
-            painter = painterResource(id = R.drawable.dummy_girl),
+            painter = rememberAsyncImagePainter(ApiService.ImageURL+detailsBase.backdrop_path),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
@@ -245,4 +253,3 @@ fun MovieDetailScreen(detailsBase: DetailsBasedata) {
             text = detailsBase.overview)
     }
 }
-

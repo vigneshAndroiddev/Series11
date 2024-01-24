@@ -10,6 +10,7 @@ import retrofit2.http.Query
 interface ApiService {
 
     companion object {
+        val ImageURL="http://image.tmdb.org/t/p/w780"
         const val BASE_URL = "https://api.themoviedb.org/3/"
         const val Lanuguage = "en"
         const val DefaultPageCount = 1

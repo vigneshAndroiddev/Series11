@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.test.series.repo.DetailsRepo
 import com.test.series.util.NetworkChecker
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,14 +20,19 @@ import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.M)
 @HiltViewModel
-class DetailVieModel @Inject constructor(val detailsRepo: DetailsRepo,networkChecker: NetworkChecker): ViewModel(){
+class DetailVieModel @Inject constructor(val detailsRepo: DetailsRepo,val networkChecker: NetworkChecker): ViewModel(){
     val response: MutableState<ApiState> = mutableStateOf(ApiState.Empty)
-    init {
+    private val _details = MutableLiveData<Int>()
+    val details: LiveData<Int> get() = _details
+
+    public fun getValue(seriesid: Int){
+        seriesid.also { this._details.value = it }
         if(networkChecker.isNetWorkAviliable()){
-            getPost(206559)
+            getPost(this.details.value as Int)
         }else{
             response.value= ApiState.NoNetwork
         }
+
     }
 
     private fun getPost(seriesid: Int) {

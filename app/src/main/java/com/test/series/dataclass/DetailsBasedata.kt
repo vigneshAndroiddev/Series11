@@ -8,7 +8,7 @@ import Production_countries
 import Seasons
 import Spoken_languages
 
-data class DetailsBasedata(val original_name : String,val overview : String,val first_air_date : String)
+data class DetailsBasedata(val original_name : String,val overview : String,val first_air_date : String,val backdrop_path:String)
 //val adult : Boolean,
 //val backdrop_path : String,
 //val created_by : List<String>,

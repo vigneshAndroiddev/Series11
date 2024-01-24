@@ -42,6 +42,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.test.series.dataclass.ResultsPopularSeries
 import com.test.series.retrofit.di.AppModule.iD
 import com.test.series.ui.theme.ComponentsComposeTheme
@@ -50,6 +52,7 @@ import com.test.series.viewmodel.MainViewModel
 import com.test.series.viewmodel.SharedViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.test.series.retrofit.network.ApiService
 import com.test.series.viewmodel.DetailVieModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -76,38 +79,8 @@ class RetrofitActivity : ComponentActivity() {
         }
     }
 
-//
-//    @Composable fun EachRow(post: ResultsPopularSeries) {
-//        Card(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(
-//                        horizontal = 8.dp,
-//                        vertical = 8.dp
-//                    ),
-//                elevation = 2.dp,
-//                shape = RoundedCornerShape(4.dp)
-//        ) {
-//            post.name.let {
-//                Text(
-//                    text = it,
-//                    modifier = Modifier.padding(10.dp)
-//                )
-//            }
-//            post.vote_count.let {
-//                Text(
-//                    text = it.toString(),
-//                    modifier = Modifier.padding(10.dp)
-//                )
-//            }
-//        }
-//
-//    }
-
     @Composable
     fun CardWithImage(post: ResultsPopularSeries, navController: NavHostController) {
-        val viewModel = viewModel<SharedViewModel>()
-
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -115,10 +88,8 @@ class RetrofitActivity : ComponentActivity() {
                 .shadow(8.dp)
                 .clip(RoundedCornerShape(8.dp)),
             onClick = {
-                viewModel.intValue=post.id
 
-                iD(post.id)
-                // Handle card click if needed
+                detailVieModel.getValue(post.id)
                 navController.navigate("Detailpage")
 
             }
@@ -126,8 +97,8 @@ class RetrofitActivity : ComponentActivity() {
             Column {
                 // Image
                 Image(
-                    painter = painterResource(id =com.test.series.R.drawable.dummy_girl),
-                    contentDescription = null,
+                    painter = rememberAsyncImagePainter(ApiService.ImageURL+post.backdrop_path),
+                    contentDescription = "",
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
@@ -135,14 +106,13 @@ class RetrofitActivity : ComponentActivity() {
                     contentScale = ContentScale.Crop
                 )
 
-                // First Text
+
                 Text(
                     text = post.name,
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier.padding(16.dp)
                 )
 
-                // Second Text
                 Text(
                     text = "Voted Count"+" : "+post.vote_count.toString(),
                     style = MaterialTheme.typography.body2,
@@ -186,7 +156,7 @@ class RetrofitActivity : ComponentActivity() {
             )
             SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = refreshing) , onRefresh = { refreshing=true })
             {
-                GETData(mainViewModel = mainViewModel,navController)
+                getData(mainViewModel = mainViewModel,navController)
             }
         }
 
@@ -194,7 +164,7 @@ class RetrofitActivity : ComponentActivity() {
 
     }
 
-    @Composable fun GETData(mainViewModel: MainViewModel, navController: NavHostController) {
+    @Composable fun getData(mainViewModel: MainViewModel, navController: NavHostController) {
         var isRefreshing by remember { mutableStateOf(false) }
 
 
