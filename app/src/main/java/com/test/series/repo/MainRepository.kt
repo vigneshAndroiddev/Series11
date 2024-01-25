@@ -1,7 +1,6 @@
 package com.test.series.repo
 
 import com.test.series.BuildConfig
-import com.test.series.dataclass.DetailsBasedata
 import com.test.series.dataclass.Post
 import com.test.series.retrofit.network.ApiService
 import kotlinx.coroutines.Dispatchers
@@ -14,9 +13,13 @@ class MainRepository
 @Inject
 constructor(private val apiService: ApiService){
     fun getPost(): Flow<Post> = flow {
-        emit(apiService.getPosts(BuildConfig.API_KEY,
+        emit(apiService.getPosts(
+            BuildConfig.API_KEY,
             "en",1))
     }.flowOn(Dispatchers.IO)
 
-
+    fun getSearch(s: String): Flow<Post> = flow {
+        emit(apiService.searchSeries(BuildConfig.API_KEY,
+            s))
+    }.flowOn(Dispatchers.IO)
 }

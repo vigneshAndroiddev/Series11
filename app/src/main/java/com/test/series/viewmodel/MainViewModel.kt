@@ -41,4 +41,14 @@ class MainViewModel
                 response.value=ApiState.Success(it)
             }
         }
+    fun getSearch(s: String) =
+        viewModelScope.launch {
+            mainRepository.getSearch(s).onStart {
+                response.value= ApiState.Loading
+            }.catch {
+                response.value= ApiState.Failure(it)
+            }.collect {
+                response.value=ApiState.Success(it)
+            }
+        }
 }

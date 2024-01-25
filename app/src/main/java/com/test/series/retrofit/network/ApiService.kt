@@ -29,4 +29,10 @@ interface ApiService {
         @Path("series_id") country: Int,
         @Query("language") pageNum: String = Lanuguage,
     ): DetailsBasedata
+
+    @GET("search/tv")
+    suspend fun searchSeries(
+        @Header("Authorization") token:String,
+        @Query("query") query: String,
+    ): Post
 }

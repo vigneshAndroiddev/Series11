@@ -1,9 +1,11 @@
 package com.test.series.screen
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,11 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,21 +34,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.test.series.dataclass.ResultsPopularSeries
-import com.test.series.retrofit.di.AppModule.iD
 import com.test.series.ui.theme.ComponentsComposeTheme
 import com.test.series.util.ApiState
 import com.test.series.viewmodel.MainViewModel
-import com.test.series.viewmodel.SharedViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.test.series.retrofit.network.ApiService
@@ -125,8 +121,11 @@ class RetrofitActivity : ComponentActivity() {
 
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     @Composable
     fun swipeRefresh(mainViewModel: MainViewModel, navController: NavHostController){
+        var query by remember { mutableStateOf("") }
+        var isSearchExpanded by remember { mutableStateOf(false) }
         var refreshing by remember {
             mutableStateOf(false)
         }
@@ -142,17 +141,58 @@ class RetrofitActivity : ComponentActivity() {
                 .fillMaxSize()
         ) {
             TopAppBar(
-                title = { Text(text = "Home") },
-                navigationIcon = {
-                    IconButton(onClick = {  }) {
-                        Icon(imageVector = Icons.Default.Home, contentDescription = null)
+                title = {
+                    if (isSearchExpanded) {
+                        // Show search field in the top bar when expanded
+                        OutlinedTextField(
+                            value = query,
+                            onValueChange = {
+                                query = it
+                                // Trigger the search when the user types
+                                if(query.length>0){
+                                    mainViewModel.getSearch(it)
+                                }else{
+                                    mainViewModel.getPost()
+                                }
+
+                            },
+                            placeholder = { Text("Search") },
+                            textStyle = TextStyle(
+                                fontSize = 12.sp // Set the desired text size
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .padding(2.dp,2.dp,2.dp,2.dp)
+
+
+
+                        )
+                    } else {
+                        // Show a title or other content when not expanded
+                        Text("Home")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Handle favorite action */ }) {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                    // IconButton for toggling search
+                    IconButton(onClick = {
+                        // Toggle the search UI
+                        isSearchExpanded = !isSearchExpanded
+
+                        // If search is collapsed, clear the query
+                        if (!isSearchExpanded) {
+                            query = ""
+                            mainViewModel.getPost()
+                        }
+                    }) {
+                        if (isSearchExpanded) {
+                            Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
+                        } else {
+                            Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+                        }
                     }
-                }
+                },
+                backgroundColor = Color.White
             )
             SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = refreshing) , onRefresh = { refreshing=true })
             {
@@ -163,6 +203,8 @@ class RetrofitActivity : ComponentActivity() {
 
 
     }
+
+
 
     @Composable fun getData(mainViewModel: MainViewModel, navController: NavHostController) {
         var isRefreshing by remember { mutableStateOf(false) }
